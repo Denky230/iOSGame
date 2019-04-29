@@ -13,9 +13,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // Character
     var player: Player!
+    // Other stuff yet to name
+    var goal = SKSpriteNode()
     // Environment
     var floor = SKSpriteNode()
-    // Controls
+    // UI Controls
     var jumpPad = SKSpriteNode()
     var leftPad = SKSpriteNode()
     var rightPad = SKSpriteNode()
@@ -28,12 +30,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         // Initialize game assets
         initPlayer()
+        initOtherStuff()
         initEnvironment()
         initControls()
     }
     
     func initPlayer() {
-        // Get Player node from scene
+        // Get node from scene
         let playerNode: SKSpriteNode = self.childNode(withName: "player") as! SKSpriteNode
         
         // Initialize Player from scene Player node
@@ -44,31 +47,38 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         // Set Player starting pos to middle of screen
         player.position = CGPoint(x: self.frame.midX, y: self.frame.midY)
-        // Set Player physics body
+        // Set physics body
         player.physicsBody = SKPhysicsBody(rectangleOf: player.size)
         player.physicsBody!.linearDamping = 0
         player.physicsBody?.restitution  = 0
         player.physicsBody?.friction = 0
-        // Set Player collision
+        // Set body collision
         player.physicsBody?.categoryBitMask = CollisionMasks.player.rawValue
         player.physicsBody?.collisionBitMask = CollisionMasks.floor.rawValue
+        player.physicsBody?.contactTestBitMask = CollisionMasks.goal.rawValue
         
         // Add Player to scene
         self.addChild(player)
     }
-    func initEnvironment() {
-        // Get floor node from Scene
-        floor = self.childNode(withName: "floor") as! SKSpriteNode
-        // Set floor style
-        floor.color = .white
-        // Set floor physics body
-        floor.physicsBody = SKPhysicsBody(rectangleOf: floor.size)
-        // Make floor static so it's not affected by gravity (or other phsx)
-        floor.physicsBody!.isDynamic = false
-        // Set floor collision
-        floor.physicsBody?.categoryBitMask = CollisionMasks.floor.rawValue
-        floor.physicsBody?.collisionBitMask = CollisionMasks.player.rawValue
+    func initOtherStuff() {
+        // Get node from Scene
+        goal = self.childNode(withName: "goal") as! SKSpriteNode
+        // Set physics body
+        goal.physicsBody = SKPhysicsBody(rectangleOf: goal.size)
+        // Make body static so it's not affected by gravity (or other phsx)
+        goal.physicsBody!.isDynamic = false
+        // Set body collision
+        goal.physicsBody?.categoryBitMask = CollisionMasks.goal.rawValue
     }
+    func initEnvironment() {
+        // Get node from Scene
+        floor = self.childNode(withName: "floor") as! SKSpriteNode
+        // Set physics body
+        floor.physicsBody = SKPhysicsBody(rectangleOf: floor.size)
+        // Make body static so it's not affected by gravity (or other phsx)
+        floor.physicsBody!.isDynamic = false
+        // Set body collision
+        floor.physicsBody?.categoryBitMask = CollisionMasks.floor.rawValue    }
     func initControls() {
         // Get jump pad from scene
         jumpPad = self.childNode(withName: "jump") as! SKSpriteNode
@@ -76,18 +86,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         jumpPad.physicsBody = SKPhysicsBody(rectangleOf: jumpPad.size)
         // Make jump pad static so it's not affected by gravity (or other phsx)
         jumpPad.physicsBody!.isDynamic = false
-        jumpPad.physicsBody?.categoryBitMask = CollisionMasks.controls.rawValue
+        jumpPad.physicsBody?.categoryBitMask = CollisionMasks.UI.rawValue
         
         // Left pad
         leftPad = self.childNode(withName: "left") as! SKSpriteNode
         leftPad.physicsBody = SKPhysicsBody(rectangleOf: leftPad.size)
         leftPad.physicsBody!.isDynamic = false
-        leftPad.physicsBody?.categoryBitMask = CollisionMasks.controls.rawValue
+        leftPad.physicsBody?.categoryBitMask = CollisionMasks.UI.rawValue
         // Right pad
         rightPad = self.childNode(withName: "right") as! SKSpriteNode
         rightPad.physicsBody = SKPhysicsBody(rectangleOf: rightPad.size)
         rightPad.physicsBody!.isDynamic = false
-        rightPad.physicsBody?.categoryBitMask = CollisionMasks.controls.rawValue
+        rightPad.physicsBody?.categoryBitMask = CollisionMasks.UI.rawValue
     }
     
     var vel: CGFloat = 200
@@ -116,7 +126,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let bodyB = contact.bodyB
         
         // Check for collision
-        if bodyA.categoryBitMask == CollisionMasks.player.rawValue && bodyB.categoryBitMask == CollisionMasks.floor.rawValue || bodyA.categoryBitMask == CollisionMasks.floor.rawValue && bodyB.categoryBitMask == CollisionMasks.player.rawValue {
+        if bodyA.categoryBitMask == CollisionMasks.player.rawValue && bodyB.categoryBitMask == CollisionMasks.goal.rawValue || bodyA.categoryBitMask == CollisionMasks.goal.rawValue && bodyB.categoryBitMask == CollisionMasks.player.rawValue {
+            
+            print("Reached goal!")
         }
     }
     

@@ -1,27 +1,19 @@
 //
-//  Player.swift
+//  Goal.swift
 //  Game
 //
-//  Created by Oscar Rossello on 01/04/2019.
+//  Created by Oscar Rossello on 29/04/2019.
 //  Copyright © 2019 Oscar Rossello. All rights reserved.
 //
 
 import SpriteKit
 
-class Player: SKSpriteNode {
+class Goal: SKSpriteNode {
     
     init(spriteNode: SKSpriteNode) {
         super.init(texture: spriteNode.texture, color: spriteNode.color, size: spriteNode.size)
     }
     required init(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-    
-    func move(x: CGFloat) {
-        self.physicsBody?.velocity = CGVector(dx: x, dy: 0)
-    }
-    
-    func jump() {
-        self.physicsBody!.applyImpulse(CGVector(dx: 0, dy: 12))
     }
 }

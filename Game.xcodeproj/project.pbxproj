@@ -72,11 +72,19 @@
 				1F0E0A7122400EAA007C98D9 /* Assets.xcassets */,
 				1F0E0A7322400EAA007C98D9 /* LaunchScreen.storyboard */,
 				1F0E0A7622400EAA007C98D9 /* Info.plist */,
-				1F684EFB22527E5E0018363F /* Player.swift */,
+				1F34784F227763E000936DCB /* Entities */,
 				1F46F3AF224AAFEE0063F1E2 /* Constants */,
 				1F46F3AE224AA5DB0063F1E2 /* Scenes */,
 			);
 			path = Game;
+			sourceTree = "<group>";
+		};
+		1F34784F227763E000936DCB /* Entities */ = {
+			isa = PBXGroup;
+			children = (
+				1F684EFB22527E5E0018363F /* Player.swift */,
+			);
+			path = Entities;
 			sourceTree = "<group>";
 		};
 		1F46F3AE224AA5DB0063F1E2 /* Scenes */ = {
