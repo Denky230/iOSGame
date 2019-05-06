@@ -17,8 +17,8 @@ class Player: SKSpriteNode {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func move(x: CGFloat) {
-        self.physicsBody?.velocity = CGVector(dx: x, dy: (self.physicsBody?.velocity.dy)!)
+    func move(direction: CGFloat) {
+        self.physicsBody?.velocity = CGVector(dx: 200 * direction, dy: (self.physicsBody?.velocity.dy)!)
     }
     
     func jump() {

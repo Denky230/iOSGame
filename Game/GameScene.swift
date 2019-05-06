@@ -14,7 +14,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     // Character
     var player: Player!
     // Game camera
-    let CAMERA_BOUNDS_PERCENT = 20
+    let CAMERA_INNER_BOUNDS_PERCENT = 10
     var cam: SKCameraNode!
     // Other stuff yet to name
     var goal = SKSpriteNode()
@@ -119,7 +119,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         cam.addChild(rightPad)
     }
     
-    var vel: CGFloat = 200
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         // Loop all touches
         for touch: UITouch in touches {
@@ -130,8 +129,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 // Check if location matches any button
                 switch (nodes[0]) {
                     case jumpPad: player.jump(); break
-                    case leftPad: player.move(x: -vel); break
-                    case rightPad: player.move(x: vel); break
+                    case leftPad: player.move(direction: -1); break
+                    case rightPad: player.move(direction: 1); break
                     default: break
                 }
             }
@@ -155,18 +154,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // Called before each frame is rendered
         
         let sceneWidth = (self.scene?.frame.width)!
-        let cameraInset = sceneWidth / CGFloat(100 / CAMERA_BOUNDS_PERCENT)
-        let cameraOffset = sceneWidth - cameraInset
-        let playerCameraPosDiff = player.position.x - cam.position.x
+        let camInnerBoundsW = sceneWidth / CGFloat(100 / CAMERA_INNER_BOUNDS_PERCENT)
+        let playerToCameraX = player.position.x - cam.position.x
         
         // Check if Player is out of camera bounds
-        if abs(playerCameraPosDiff) > cameraInset {
-            // TO DO
-//            let playerCameraBoundsDiff = abs(player.position.x) - cam.position.x
+        if abs(playerToCameraX) > camInnerBoundsW {
             // Update camera position
-            cam.position.x = cam.position.x + (playerCameraPosDiff - cameraOffset)
+            let camInnerBoundCloserToPlayer = cam.position.x +
+                (playerToCameraX > 0 ? camInnerBoundsW : -camInnerBoundsW)
+            cam.position.x = cam.position.x + (player.position.x - camInnerBoundCloserToPlayer)
         }
-        
-//        print(player.physicsBody!.velocity)
     }
 }
