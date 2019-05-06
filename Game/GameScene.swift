@@ -13,6 +13,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // Character
     var player: Player!
+    // Game camera
+    let CAMERA_BOUNDS_PERCENT = 20
+    var cam: SKCameraNode!
     // Other stuff yet to name
     var goal = SKSpriteNode()
     // Environment
@@ -30,6 +33,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         // Initialize game assets
         initPlayer()
+        initCamera()
         initOtherStuff()
         initEnvironment()
         initControls()
@@ -60,6 +64,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // Add Player to scene
         self.addChild(player)
     }
+    func initCamera() {
+        cam = SKCameraNode()
+        self.camera = cam
+        self.addChild(cam)
+    }
     func initOtherStuff() {
         // Get node from Scene
         goal = self.childNode(withName: "goal") as! SKSpriteNode
@@ -81,23 +90,33 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         floor.physicsBody?.categoryBitMask = CollisionMasks.floor.rawValue    }
     func initControls() {
         // Get jump pad from scene
-        jumpPad = self.childNode(withName: "jump") as! SKSpriteNode
+//        jumpPad = self.childNode(withName: "jump") as! SKSpriteNode
+        jumpPad = SKSpriteNode(color: .yellow, size: CGSize(width: 80, height: 80))
+        jumpPad.position = CGPoint(x: 280, y: -40)
         // Set jump pad physics body
         jumpPad.physicsBody = SKPhysicsBody(rectangleOf: jumpPad.size)
         // Make jump pad static so it's not affected by gravity (or other phsx)
         jumpPad.physicsBody!.isDynamic = false
         jumpPad.physicsBody?.categoryBitMask = CollisionMasks.UI.rawValue
+        // Add jump pad to camera so it becomes part of the UI
+        cam.addChild(jumpPad)
         
         // Left pad
-        leftPad = self.childNode(withName: "left") as! SKSpriteNode
+//        leftPad = self.childNode(withName: "left") as! SKSpriteNode
+        leftPad = SKSpriteNode(color: .green, size: CGSize(width: 50, height: 50))
+        leftPad.position = CGPoint(x: -295  , y: -55)
         leftPad.physicsBody = SKPhysicsBody(rectangleOf: leftPad.size)
         leftPad.physicsBody!.isDynamic = false
         leftPad.physicsBody?.categoryBitMask = CollisionMasks.UI.rawValue
+        cam.addChild(leftPad)
         // Right pad
-        rightPad = self.childNode(withName: "right") as! SKSpriteNode
+//        rightPad = self.childNode(withName: "right") as! SKSpriteNode
+        rightPad = SKSpriteNode(color: .green, size: CGSize(width: 50, height: 50))
+        rightPad.position = CGPoint(x: -215, y: -55)
         rightPad.physicsBody = SKPhysicsBody(rectangleOf: rightPad.size)
         rightPad.physicsBody!.isDynamic = false
         rightPad.physicsBody?.categoryBitMask = CollisionMasks.UI.rawValue
+        cam.addChild(rightPad)
     }
     
     var vel: CGFloat = 200
@@ -128,12 +147,26 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // Check for collision
         if bodyA.categoryBitMask == CollisionMasks.player.rawValue && bodyB.categoryBitMask == CollisionMasks.goal.rawValue || bodyA.categoryBitMask == CollisionMasks.goal.rawValue && bodyB.categoryBitMask == CollisionMasks.player.rawValue {
             
-            print("Reached goal!")
+//            print("Reached goal!")
         }
     }
     
     override func update(_ currentTime: TimeInterval) {
         // Called before each frame is rendered
+        
+        let sceneWidth = (self.scene?.frame.width)!
+        let cameraInset = sceneWidth / CGFloat(100 / CAMERA_BOUNDS_PERCENT)
+        let cameraOffset = sceneWidth - cameraInset
+        let playerCameraPosDiff = player.position.x - cam.position.x
+        
+        // Check if Player is out of camera bounds
+        if abs(playerCameraPosDiff) > cameraInset {
+            // TO DO
+//            let playerCameraBoundsDiff = abs(player.position.x) - cam.position.x
+            // Update camera position
+            cam.position.x = cam.position.x + (playerCameraPosDiff - cameraOffset)
+        }
+        
 //        print(player.physicsBody!.velocity)
     }
 }
