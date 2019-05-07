@@ -16,14 +16,23 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     // Game camera
     let CAMERA_INNER_BOUNDS_PERCENT = 10
     var cam: SKCameraNode!
-    // Other stuff yet to name
-    var goal = SKSpriteNode()
-    // Environment
-    var floor = SKSpriteNode()
+    // Game timer
+    var gameTimerLbl = SKLabelNode(fontNamed: "ArialMT")
+    var gameTimer = 60 {
+        didSet {
+            let mins = gameTimer / 60
+            let secs = gameTimer % 60
+            gameTimerLbl.text = "\(mins):\(secs)"
+        }
+    }
     // UI Controls
     var jumpPad = SKSpriteNode()
     var leftPad = SKSpriteNode()
     var rightPad = SKSpriteNode()
+    // Environment
+    var floor = SKSpriteNode()
+    // Other stuff yet to name
+    var goal = SKSpriteNode()
     
     override func didMove(to view: SKView) {
         // Handle our own physics
@@ -34,6 +43,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // Initialize game assets
         initPlayer()
         initCamera()
+        initTimer()
         initOtherStuff()
         initEnvironment()
         initControls()
@@ -42,24 +52,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func initPlayer() {
         // Get node from scene
         let playerNode: SKSpriteNode = self.childNode(withName: "player") as! SKSpriteNode
-        
-        // Initialize Player from scene Player node
-        player = Player(spriteNode: playerNode)
-        
         // Remove Player node since we don't need it anymore
         self.removeChildren(in: [self.childNode(withName: "player")!])
         
-        // Set Player starting pos to middle of screen
-        player.position = CGPoint(x: self.frame.midX, y: self.frame.midY)
-        // Set physics body
-        player.physicsBody = SKPhysicsBody(rectangleOf: player.size)
-        player.physicsBody!.linearDamping = 0
-        player.physicsBody?.restitution  = 0
-        player.physicsBody?.friction = 0
-        // Set body collision
-        player.physicsBody?.categoryBitMask = CollisionMasks.player.rawValue
-        player.physicsBody?.collisionBitMask = CollisionMasks.floor.rawValue
-        player.physicsBody?.contactTestBitMask = CollisionMasks.goal.rawValue
+        // Initialize Player from scene Player node
+        player = Player(spriteNode: playerNode)
         
         // Add Player to scene
         self.addChild(player)
@@ -68,6 +65,23 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         cam = SKCameraNode()
         self.camera = cam
         self.addChild(cam)
+    }
+    func initTimer() {
+        gameTimerLbl.fontSize = 40
+        gameTimerLbl.fontColor = .white
+        gameTimerLbl.position = CGPoint(x: -size.width / 2 + 50, y: size.height / 2 - 50)
+        addChild(gameTimerLbl)
+        
+        let wait = SKAction.wait(forDuration: 1)
+        let block = SKAction.run({ [unowned self] in
+            if self.gameTimer > 0 {
+                self.gameTimer -= 1
+            } else {
+                self.removeAction(forKey: "gameTimer")
+            }
+        })
+        let sequence = SKAction.sequence([wait, block])
+        run(SKAction.repeatForever(sequence), withKey: "gameTimer")
     }
     func initOtherStuff() {
         // Get node from Scene
@@ -87,10 +101,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // Make body static so it's not affected by gravity (or other phsx)
         floor.physicsBody!.isDynamic = false
         // Set body collision
-        floor.physicsBody?.categoryBitMask = CollisionMasks.floor.rawValue    }
+        floor.physicsBody?.categoryBitMask = CollisionMasks.floor.rawValue        
+    }
     func initControls() {
         // Get jump pad from scene
-//        jumpPad = self.childNode(withName: "jump") as! SKSpriteNode
         jumpPad = SKSpriteNode(color: .yellow, size: CGSize(width: 80, height: 80))
         jumpPad.position = CGPoint(x: 280, y: -40)
         // Set jump pad physics body
@@ -100,9 +114,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         jumpPad.physicsBody?.categoryBitMask = CollisionMasks.UI.rawValue
         // Add jump pad to camera so it becomes part of the UI
         cam.addChild(jumpPad)
-        
         // Left pad
-//        leftPad = self.childNode(withName: "left") as! SKSpriteNode
         leftPad = SKSpriteNode(color: .green, size: CGSize(width: 50, height: 50))
         leftPad.position = CGPoint(x: -295  , y: -55)
         leftPad.physicsBody = SKPhysicsBody(rectangleOf: leftPad.size)
@@ -110,7 +122,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         leftPad.physicsBody?.categoryBitMask = CollisionMasks.UI.rawValue
         cam.addChild(leftPad)
         // Right pad
-//        rightPad = self.childNode(withName: "right") as! SKSpriteNode
         rightPad = SKSpriteNode(color: .green, size: CGSize(width: 50, height: 50))
         rightPad.position = CGPoint(x: -215, y: -55)
         rightPad.physicsBody = SKPhysicsBody(rectangleOf: rightPad.size)
@@ -119,6 +130,21 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         cam.addChild(rightPad)
     }
     
+    func drawTriangle() {
+        let path = UIBezierPath()
+        path.move(to: CGPoint(x: 0.0, y: 50.0))
+        path.addLine(to: CGPoint(x: 50.0, y: -36.6))
+        path.addLine(to: CGPoint(x: -50.0, y: -36.6))
+        path.addLine(to: CGPoint(x: 0.0, y: 50.0))
+        let tri = SKShapeNode(path: path.cgPath)
+        self.addChild(tri)
+    }
+    
+    func gameOver() {
+        
+    }
+    
+    // Handle screen touches here
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         // Loop all touches
         for touch: UITouch in touches {
@@ -140,16 +166,29 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     // Handle collisions here
     func didBegin(_ contact: SKPhysicsContact) {
         // Collisioning bodies
-        let bodyA = contact.bodyA
-        let bodyB = contact.bodyB
+        guard var bodyA = contact.bodyA.node else { return }
+        guard var bodyB = contact.bodyB.node else { return }
         
-        // Check for collision
-        if bodyA.categoryBitMask == CollisionMasks.player.rawValue && bodyB.categoryBitMask == CollisionMasks.goal.rawValue || bodyA.categoryBitMask == CollisionMasks.goal.rawValue && bodyB.categoryBitMask == CollisionMasks.player.rawValue {
-            
-//            print("Reached goal!")
+        // Make sure bodyA is the one with CollisionMask closer to 0
+        if bodyA.physicsBody!.categoryBitMask >
+            bodyB.physicsBody!.categoryBitMask {
+            bodyA = contact.bodyB.node!
+            bodyB = contact.bodyA.node!
+        }
+        
+        let bA = bodyA.name!
+        let bB = bodyB.name!
+        
+        // Check for collisions
+        if bA == "player" && bB == "goal" {
+            print("Reached goal!")
+        }
+        else if bA == "player" && bB == "floor" {
+            player.isGrounded = true
         }
     }
     
+    // Handle physics here
     override func update(_ currentTime: TimeInterval) {
         // Called before each frame is rendered
         
@@ -157,12 +196,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let camInnerBoundsW = sceneWidth / CGFloat(100 / CAMERA_INNER_BOUNDS_PERCENT)
         let playerToCameraX = player.position.x - cam.position.x
         
-        // Check if Player is out of camera bounds
+        // Check if Player is out of camera inner bounds
         if abs(playerToCameraX) > camInnerBoundsW {
             // Update camera position
             let camInnerBoundCloserToPlayer = cam.position.x +
                 (playerToCameraX > 0 ? camInnerBoundsW : -camInnerBoundsW)
-            cam.position.x = cam.position.x + (player.position.x - camInnerBoundCloserToPlayer)
+            cam.position.x += player.position.x - camInnerBoundCloserToPlayer
         }
     }
 }
