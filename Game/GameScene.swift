@@ -18,11 +18,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var cam: SKCameraNode!
     // Game timer
     var gameTimerLbl = SKLabelNode(fontNamed: "ArialMT")
-    var gameTimer = 60 {
+    var gameTimer = 10 {
         didSet {
             let mins = gameTimer / 60
             let secs = gameTimer % 60
-            gameTimerLbl.text = "\(mins):\(secs)"
+            // Make sure text is hour formated (m:ss)
+            gameTimerLbl.text = String(format: "%d:%02d", mins, secs)
         }
     }
     // UI Controls
@@ -37,8 +38,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     override func didMove(to view: SKView) {
         // Handle our own physics
         self.physicsWorld.contactDelegate = self
-        // Set game gravity
-        self.physicsWorld.gravity = CGVector(dx: 0, dy: -5)
         
         // Initialize game assets
         initPlayer()
@@ -47,30 +46,33 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         initOtherStuff()
         initEnvironment()
         initControls()
+        
+        drawRectangle()
     }
     
     func initPlayer() {
-        // Get node from scene
-        let playerNode: SKSpriteNode = self.childNode(withName: "player") as! SKSpriteNode
-        // Remove Player node since we don't need it anymore
-        self.removeChildren(in: [self.childNode(withName: "player")!])
-        
-        // Initialize Player from scene Player node
-        player = Player(spriteNode: playerNode)
-        
+        // Create Player SpriteNode
+        let playerSpriteNode =
+            SKSpriteNode(color: .cyan, size: CGSize(width: 30, height: 30))
+        // Initialize Player from Player node
+        player = Player(spriteNode: playerSpriteNode)
         // Add Player to scene
         self.addChild(player)
     }
     func initCamera() {
         cam = SKCameraNode()
+        cam.zPosition = 1
         self.camera = cam
         self.addChild(cam)
     }
     func initTimer() {
         gameTimerLbl.fontSize = 40
         gameTimerLbl.fontColor = .white
-        gameTimerLbl.position = CGPoint(x: -size.width / 2 + 50, y: size.height / 2 - 50)
-        addChild(gameTimerLbl)
+        gameTimerLbl.position = CGPoint(
+            x: -size.width / 2 + 50,
+            y: size.height / 2 - 50
+        )
+        cam.addChild(gameTimerLbl)
         
         let wait = SKAction.wait(forDuration: 1)
         let block = SKAction.run({ [unowned self] in
@@ -84,7 +86,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         run(SKAction.repeatForever(sequence), withKey: "gameTimer")
     }
     func initOtherStuff() {
-        // Get node from Scene
+        // Get node from scene
         goal = self.childNode(withName: "goal") as! SKSpriteNode
         // Set physics body
         goal.physicsBody = SKPhysicsBody(rectangleOf: goal.size)
@@ -92,9 +94,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         goal.physicsBody!.isDynamic = false
         // Set body collision
         goal.physicsBody?.categoryBitMask = CollisionMasks.goal.rawValue
+        goal.physicsBody?.collisionBitMask = 0
     }
     func initEnvironment() {
-        // Get node from Scene
+        // Get node from scene
         floor = self.childNode(withName: "floor") as! SKSpriteNode
         // Set physics body
         floor.physicsBody = SKPhysicsBody(rectangleOf: floor.size)
@@ -104,7 +107,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         floor.physicsBody?.categoryBitMask = CollisionMasks.floor.rawValue        
     }
     func initControls() {
-        // Get jump pad from scene
         jumpPad = SKSpriteNode(color: .yellow, size: CGSize(width: 80, height: 80))
         jumpPad.position = CGPoint(x: 280, y: -40)
         // Set jump pad physics body
@@ -130,6 +132,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         cam.addChild(rightPad)
     }
     
+    func drawRectangle() {
+        let rect = SKShapeNode(rectOf: CGSize(width: 80, height: 80))
+        rect.position = CGPoint(x: 70, y: 100)
+        let box = Trap(path: rect.path!, position: rect.position)
+        self.addChild(box)
+    }
     func drawTriangle() {
         let path = UIBezierPath()
         path.move(to: CGPoint(x: 0.0, y: 50.0))
@@ -181,11 +189,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         // Check for collisions
         if bA == "player" && bB == "goal" {
-            print("Reached goal!")
+            
         }
         else if bA == "player" && bB == "floor" {
             player.isGrounded = true
         }
+        else if bA == "player" && bB == "trap" {
+            
+        }
+        
+//        print("\(bA) with \(bB)")
     }
     
     // Handle physics here

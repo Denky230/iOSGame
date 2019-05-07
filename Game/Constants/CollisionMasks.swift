@@ -12,5 +12,5 @@ enum CollisionMasks: UInt32 {
     case player = 2
     case floor = 4
     case trap = 8
-    case goal = 10
+    case goal = 16
 }

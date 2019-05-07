@@ -14,18 +14,18 @@ class Player: SKSpriteNode {
         super.init(texture: spriteNode.texture, color: spriteNode.color, size: spriteNode.size)
         
         // Set name so we can check for collisions easier
-        name = "player"
+        self.name = "player"
         // Set Player starting pos to middle of screen
-        position = CGPoint(x: self.frame.midX, y: self.frame.midY)
+        self.position = CGPoint.zero
         // Set physics body
-        physicsBody = SKPhysicsBody(rectangleOf: size)
-        physicsBody!.linearDamping = 0
-        physicsBody?.restitution  = 0
-        physicsBody?.friction = 0
+        self.physicsBody = SKPhysicsBody(rectangleOf: size)
+        self.physicsBody!.linearDamping = 0
+        self.physicsBody?.restitution  = 0
+        self.physicsBody?.friction = 0
         // Set body collision
-        physicsBody?.categoryBitMask = CollisionMasks.player.rawValue
-        physicsBody?.collisionBitMask = CollisionMasks.floor.rawValue
-        physicsBody?.contactTestBitMask = CollisionMasks.goal.rawValue | CollisionMasks.floor.rawValue
+        self.physicsBody?.categoryBitMask = CollisionMasks.player.rawValue
+        self.physicsBody?.collisionBitMask = CollisionMasks.floor.rawValue | CollisionMasks.trap.rawValue
+        self.physicsBody?.contactTestBitMask = CollisionMasks.floor.rawValue | CollisionMasks.trap.rawValue
     }
     required init(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
