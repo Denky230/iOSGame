@@ -12,7 +12,7 @@ class Trap: SKShapeNode {
     
     private var state: Int = 1 {
         didSet {
-            
+            run(SKAction.move(by: CGVector(dx: 0, dy: -50), duration: 0.5))
         }
     }
     
@@ -30,12 +30,12 @@ class Trap: SKShapeNode {
         
         // Add physics body so Player can collide with it
         self.physicsBody = SKPhysicsBody(polygonFrom: path)
-        // Add tag so Player dies when colliding
         self.physicsBody?.categoryBitMask = CollisionMasks.trap.rawValue
         self.physicsBody?.collisionBitMask = CollisionMasks.player.rawValue | CollisionMasks.floor.rawValue
-        // Make body static so it's not affected by gravity (or other phsx)
-        self.physicsBody?.isDynamic = true
-        self.physicsBody?.mass = 100
+        // Set body dynamic values
+        self.physicsBody?.isDynamic = false
+        
+        run(SKAction.move(by: CGVector(dx: 0, dy: -100), duration: 0.5))
     }
     
     required init?(coder aDecoder: NSCoder) {

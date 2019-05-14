@@ -134,7 +134,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func drawRectangle() {
         let rect = SKShapeNode(rectOf: CGSize(width: 80, height: 80))
-        rect.position = CGPoint(x: 70, y: 100)
+        rect.position = CGPoint(x: 30, y: 50)
         let box = Trap(path: rect.path!, position: rect.position)
         self.addChild(box)
     }
@@ -195,7 +195,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             player.isGrounded = true
         }
         else if bA == "player" && bB == "trap" {
-            
+            let diff = abs(bodyB.frame.minY - contact.contactPoint.y)
+            if diff < 0.5 {
+                print("dead")
+            }
         }
         
 //        print("\(bA) with \(bB)")
