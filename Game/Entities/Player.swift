@@ -19,27 +19,38 @@ class Player: SKSpriteNode {
         self.position = CGPoint.zero
         // Set physics body
         self.physicsBody = SKPhysicsBody(rectangleOf: size)
-        self.physicsBody!.linearDamping = 0
-        self.physicsBody?.restitution  = 0
-        self.physicsBody?.friction = 0
+        // Remove friction
+//        self.physicsBody!.linearDamping     = 0
+//        self.physicsBody?.restitution       = 0
+//        self.physicsBody?.friction          = 0
         // Set body collision
         self.physicsBody?.categoryBitMask = CollisionMasks.player.rawValue
         self.physicsBody?.collisionBitMask = CollisionMasks.floor.rawValue | CollisionMasks.trap.rawValue
-        self.physicsBody?.contactTestBitMask = CollisionMasks.floor.rawValue | CollisionMasks.trap.rawValue
+        self.physicsBody?.contactTestBitMask = CollisionMasks.floor.rawValue | CollisionMasks.trap.rawValue | CollisionMasks.goal.rawValue
     }
     required init(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // Use to move on buttonPress
     func move(direction: CGFloat) {
         self.physicsBody?.velocity = CGVector(dx: 200 * direction, dy: (self.physicsBody?.velocity.dy)!)
+    }
+    // Use to move on buttonHold
+    func movePro(direction: CGFloat) {
+        let moveAction = SKAction.moveBy(x: 200 * direction, y: 0, duration: 1)
+        let repeatForEver = SKAction.repeatForever(moveAction)
+        let seq = SKAction.sequence([moveAction, repeatForEver])
+        
+        // Run move Action
+        run(seq, withKey: "move")
     }
     
     var isGrounded = false
     func jump() {
         if isGrounded {
             isGrounded = false
-            self.physicsBody!.applyImpulse(CGVector(dx: 0, dy: 12))
+            self.physicsBody!.applyImpulse(CGVector(dx: 0, dy: 25))
         }
     }
 }

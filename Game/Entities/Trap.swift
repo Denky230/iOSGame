@@ -10,12 +10,6 @@ import SpriteKit
 
 class Trap: SKShapeNode {
     
-    private var state: Int = 1 {
-        didSet {
-            run(SKAction.move(by: CGVector(dx: 0, dy: -50), duration: 0.5))
-        }
-    }
-    
     init(path: CGPath, position: CGPoint) {
         super.init()
         
@@ -35,14 +29,21 @@ class Trap: SKShapeNode {
         // Set body dynamic values
         self.physicsBody?.isDynamic = false
         
-        run(SKAction.move(by: CGVector(dx: 0, dy: -100), duration: 0.5))
+        // Set up animations with SKActions
+        let rand = Float.random(in: 0 ... 1)
+        let initialDelay = SKAction.wait(forDuration: TimeInterval(rand))
+        let moveDown = SKAction.move(by: CGVector(dx: 0, dy: -100), duration: 0.5)
+        let moveUp = SKAction.move(by: CGVector(dx: 0, dy: 100), duration: 0.5)
+        let delay = SKAction.wait(forDuration: 0.75)
+        let sequence = SKAction.sequence([moveDown, moveUp, delay])
+        let loop = SKAction.repeatForever(sequence)
+        let animation = SKAction.sequence([initialDelay, loop])
+        
+        // Run move Action
+        run(animation, withKey: "move")
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-    
-    func changeState() {
-        self.state *= -1
     }
 }

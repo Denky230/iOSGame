@@ -11,6 +11,9 @@ import GameplayKit
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
+    // Scene
+    var scale: Float = 0
+    let TOTAL_TILES: Int = 20
     // Character
     var player: Player!
     // Game camera
@@ -46,8 +49,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         initOtherStuff()
         initEnvironment()
         initControls()
+        initTraps()
         
-        drawRectangle()
+        scale = Float((self.scene?.frame.width)! / CGFloat(TOTAL_TILES))
     }
     
     func initPlayer() {
@@ -80,6 +84,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 self.gameTimer -= 1
             } else {
                 self.removeAction(forKey: "gameTimer")
+                self.gameOver(victory: false)
             }
         })
         let sequence = SKAction.sequence([wait, block])
@@ -131,10 +136,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         rightPad.physicsBody?.categoryBitMask = CollisionMasks.UI.rawValue
         cam.addChild(rightPad)
     }
+    func initTraps() {
+        scene!.enumerateChildNodes(withName: "trap") {
+            (node, stop) in
+            
+            self.drawRectangle(x: Int(node.position.x))
+            self.removeChildren(in: [node])
+        }
+        
+    }
     
-    func drawRectangle() {
+    func drawRectangle(x: Int) {
         let rect = SKShapeNode(rectOf: CGSize(width: 80, height: 80))
-        rect.position = CGPoint(x: 30, y: 50)
+        rect.position = CGPoint(x: x, y: 50)
         let box = Trap(path: rect.path!, position: rect.position)
         self.addChild(box)
     }
@@ -148,8 +162,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.addChild(tri)
     }
     
-    func gameOver() {
-        
+    func gameOver(victory: Bool) {
+        print( victory ? "Winwin" : "U ded" )
     }
     
     // Handle screen touches here
@@ -163,12 +177,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 // Check if location matches any button
                 switch (nodes[0]) {
                     case jumpPad: player.jump(); break
-                    case leftPad: player.move(direction: -1); break
-                    case rightPad: player.move(direction: 1); break
+                    case leftPad: player.movePro(direction: -1); break
+                    case rightPad: player.movePro(direction: 1); break
                     default: break
                 }
             }
         }
+    }
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        // Stop Player X movement every frame
+        player.removeAction(forKey: "move")
     }
     
     // Handle collisions here
@@ -189,19 +207,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         // Check for collisions
         if bA == "player" && bB == "goal" {
-            
+            gameOver(victory: true)
         }
         else if bA == "player" && bB == "floor" {
             player.isGrounded = true
         }
         else if bA == "player" && bB == "trap" {
+            // Check if Player hit lower part of Trap
             let diff = abs(bodyB.frame.minY - contact.contactPoint.y)
             if diff < 0.5 {
-                print("dead")
+                gameOver(victory: false)
             }
         }
-        
-//        print("\(bA) with \(bB)")
     }
     
     // Handle physics here
