@@ -16,6 +16,7 @@
 		1F0E0A7222400EAA007C98D9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1F0E0A7122400EAA007C98D9 /* Assets.xcassets */; };
 		1F0E0A7522400EAA007C98D9 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1F0E0A7322400EAA007C98D9 /* LaunchScreen.storyboard */; };
 		1F46F3B1224AB02A0063F1E2 /* CollisionMasks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F46F3B0224AB02A0063F1E2 /* CollisionMasks.swift */; };
+		1F4B801D228C84CB00061B55 /* GameOverScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F4B801C228C84CB00061B55 /* GameOverScene.swift */; };
 		1F684EFC22527E5E0018363F /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F684EFB22527E5E0018363F /* Player.swift */; };
 		FA988AE22280ECB3005D6153 /* Trap.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA988AE12280ECB3005D6153 /* Trap.swift */; };
 		FA988AE52280FA3B005D6153 /* EndViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA988AE42280FA3B005D6153 /* EndViewController.swift */; };
@@ -33,6 +34,7 @@
 		1F0E0A7422400EAA007C98D9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		1F0E0A7622400EAA007C98D9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1F46F3B0224AB02A0063F1E2 /* CollisionMasks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollisionMasks.swift; sourceTree = "<group>"; };
+		1F4B801C228C84CB00061B55 /* GameOverScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = GameOverScene.swift; path = "../../../../Downloads/crabinvader/Crab Invader/GameOverScene.swift"; sourceTree = "<group>"; };
 		1F684EFB22527E5E0018363F /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
 		FA988AE12280ECB3005D6153 /* Trap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Trap.swift; sourceTree = "<group>"; };
 		FA988AE42280FA3B005D6153 /* EndViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndViewController.swift; sourceTree = "<group>"; };
@@ -70,7 +72,6 @@
 			children = (
 				1F0E0A6422400EAA007C98D9 /* AppDelegate.swift */,
 				1F0E0A6822400EAA007C98D9 /* Actions.sks */,
-				1F0E0A6A22400EAA007C98D9 /* GameScene.swift */,
 				1F0E0A6E22400EAA007C98D9 /* Main.storyboard */,
 				1F0E0A7122400EAA007C98D9 /* Assets.xcassets */,
 				1F0E0A7322400EAA007C98D9 /* LaunchScreen.storyboard */,
@@ -95,6 +96,8 @@
 		1F46F3AE224AA5DB0063F1E2 /* Scenes */ = {
 			isa = PBXGroup;
 			children = (
+				1F4B801C228C84CB00061B55 /* GameOverScene.swift */,
+				1F0E0A6A22400EAA007C98D9 /* GameScene.swift */,
 				1F0E0A6622400EAA007C98D9 /* GameScene.sks */,
 			);
 			path = Scenes;
@@ -196,6 +199,7 @@
 				FA988AE52280FA3B005D6153 /* EndViewController.swift in Sources */,
 				1F46F3B1224AB02A0063F1E2 /* CollisionMasks.swift in Sources */,
 				1F684EFC22527E5E0018363F /* Player.swift in Sources */,
+				1F4B801D228C84CB00061B55 /* GameOverScene.swift in Sources */,
 				1F0E0A6522400EAA007C98D9 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -344,6 +348,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				INFOPLIST_FILE = Game/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -361,6 +366,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				INFOPLIST_FILE = Game/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

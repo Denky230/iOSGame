@@ -21,7 +21,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var cam: SKCameraNode!
     // Game timer
     var gameTimerLbl = SKLabelNode(fontNamed: "ArialMT")
-    var gameTimer = 10 {
+    var gameTimer = 30 {
         didSet {
             let mins = gameTimer / 60
             let secs = gameTimer % 60
@@ -33,8 +33,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var jumpPad = SKSpriteNode()
     var leftPad = SKSpriteNode()
     var rightPad = SKSpriteNode()
-    // Environment
-    var floor = SKSpriteNode()
     // Other stuff yet to name
     var goal = SKSpriteNode()
     
@@ -71,7 +69,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     func initTimer() {
         gameTimerLbl.fontSize = 40
-        gameTimerLbl.fontColor = .white
+        gameTimerLbl.fontColor = .red
         gameTimerLbl.position = CGPoint(
             x: -size.width / 2 + 50,
             y: size.height / 2 - 50
@@ -84,7 +82,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 self.gameTimer -= 1
             } else {
                 self.removeAction(forKey: "gameTimer")
-                self.gameOver(victory: false)
+//                self.gameOver(victory: false)
             }
         })
         let sequence = SKAction.sequence([wait, block])
@@ -102,14 +100,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         goal.physicsBody?.collisionBitMask = 0
     }
     func initEnvironment() {
-        // Get node from scene
-        floor = self.childNode(withName: "floor") as! SKSpriteNode
-        // Set physics body
-        floor.physicsBody = SKPhysicsBody(rectangleOf: floor.size)
-        // Make body static so it's not affected by gravity (or other phsx)
-        floor.physicsBody!.isDynamic = false
-        // Set body collision
-        floor.physicsBody?.categoryBitMask = CollisionMasks.floor.rawValue        
+        scene!.enumerateChildNodes(withName: "floor") {
+            (node, stop) in
+            
+            // For every "floor" node found in scene...
+            // Set physics body
+            let spriteNode: SKSpriteNode = node as! SKSpriteNode            
+            node.physicsBody = SKPhysicsBody(rectangleOf: spriteNode.size)
+            // Make body static so it's not affected by gravity (or other phsx)
+            node.physicsBody!.isDynamic = false
+            // Set body collision
+            node.physicsBody?.categoryBitMask = CollisionMasks.floor.rawValue
+        }
     }
     func initControls() {
         jumpPad = SKSpriteNode(color: .yellow, size: CGSize(width: 80, height: 80))
@@ -140,15 +142,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         scene!.enumerateChildNodes(withName: "trap") {
             (node, stop) in
             
-            self.drawRectangle(x: Int(node.position.x))
+            // For every "trap" node found in scene, instantiate a Trap
+            self.drawRectangle(x: Int(node.position.x), y: Int(node.frame.minY))
             self.removeChildren(in: [node])
         }
-        
     }
     
-    func drawRectangle(x: Int) {
-        let rect = SKShapeNode(rectOf: CGSize(width: 80, height: 80))
-        rect.position = CGPoint(x: x, y: 50)
+    func drawRectangle(x: Int, y: Int) {
+        let size = 80
+        let rect = SKShapeNode(rectOf: CGSize(width: size, height: size))
+        rect.position = CGPoint(x: x, y: y + size / 2 + 100)
         let box = Trap(path: rect.path!, position: rect.position)
         self.addChild(box)
     }
@@ -164,6 +167,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func gameOver(victory: Bool) {
         print( victory ? "Winwin" : "U ded" )
+        
+        // Send to GameOver screen
+        let gameOverScene: GameOverScene = GameOverScene(size: self.size)
+        gameOverScene.scaleMode = .aspectFill
+        self.view?.presentScene(gameOverScene, transition: SKTransition.crossFade(withDuration: 1.0))
     }
     
     // Handle screen touches here
@@ -213,11 +221,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             player.isGrounded = true
         }
         else if bA == "player" && bB == "trap" {
+//            gameOver(victory: false)
+            
             // Check if Player hit lower part of Trap
             let diff = abs(bodyB.frame.minY - contact.contactPoint.y)
             if diff < 0.5 {
-                gameOver(victory: false)
+                
             }
+            
+            print(diff)
         }
     }
     
@@ -236,5 +248,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 (playerToCameraX > 0 ? camInnerBoundsW : -camInnerBoundsW)
             cam.position.x += player.position.x - camInnerBoundCloserToPlayer
         }
+        
+        // Camera follows Player on Y
+        cam.position.y = player.position.y + 100
     }
 }

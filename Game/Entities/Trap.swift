@@ -26,16 +26,15 @@ class Trap: SKShapeNode {
         self.physicsBody = SKPhysicsBody(polygonFrom: path)
         self.physicsBody?.categoryBitMask = CollisionMasks.trap.rawValue
         self.physicsBody?.collisionBitMask = CollisionMasks.player.rawValue | CollisionMasks.floor.rawValue
-        // Set body dynamic values
         self.physicsBody?.isDynamic = false
         
         // Set up animations with SKActions
         let rand = Float.random(in: 0 ... 1)
         let initialDelay = SKAction.wait(forDuration: TimeInterval(rand))
-        let moveDown = SKAction.move(by: CGVector(dx: 0, dy: -100), duration: 0.5)
-        let moveUp = SKAction.move(by: CGVector(dx: 0, dy: 100), duration: 0.5)
+        let moveDown = SKAction.move(by: CGVector(dx: 0, dy: -100), duration: 0.05)
+        let moveUp = SKAction.move(by: CGVector(dx: 0, dy: 100), duration: 1)
         let delay = SKAction.wait(forDuration: 0.75)
-        let sequence = SKAction.sequence([moveDown, moveUp, delay])
+        let sequence = SKAction.sequence([moveDown, delay, moveUp, delay])
         let loop = SKAction.repeatForever(sequence)
         let animation = SKAction.sequence([initialDelay, loop])
         
