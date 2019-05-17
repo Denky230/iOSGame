@@ -20,22 +20,37 @@ class GameOverScene: SKScene {
         }
     }
     
-    func initContent(){
-        
+    func initContent() {
         backgroundColor = .black
         
+        let scoreLabel = SKLabelNode(fontNamed: "Futura")
+        scoreLabel.fontSize = 40
+        scoreLabel.fontColor = .white
+        scoreLabel.text = "Score - \(gameTimerLbl.text!)"
+        scoreLabel.position = CGPoint(
+            x: self.size.width / 2,
+            y: self.size.height * 0.50
+        )
+        addChild(scoreLabel)
+        
         let gameOverLabel = SKLabelNode(fontNamed: "Futura")
-        gameOverLabel.fontSize = 40
+        gameOverLabel.fontSize = 60
         gameOverLabel.fontColor = .white
         gameOverLabel.text = "GAME OVER"
-        gameOverLabel.position = CGPoint(x: self.size.width/2, y: 2.0/3.0*self.size.height)
+        gameOverLabel.position = CGPoint(
+            x: self.size.width / 2,
+            y: self.size.height * 2.0 / 3.0
+        )
         addChild(gameOverLabel)
         
         let playAgainLabel = SKLabelNode(fontNamed: "Futura")
         playAgainLabel.fontSize = 22
         playAgainLabel.fontColor = .white
-        playAgainLabel.text = "Tap to play again"
-        playAgainLabel.position = CGPoint(x: self.size.width/2, y: 1.0/3.0*self.size.height)
+        playAgainLabel.text = "Tap to try again"
+        playAgainLabel.position = CGPoint(
+            x: self.size.width / 2,
+            y: self.size.height * 0.20
+        )
         addChild(playAgainLabel)
     }
     
@@ -43,7 +58,6 @@ class GameOverScene: SKScene {
         if let scene = SKScene(fileNamed: "GameScene") {
             // Set the scale mode to scale to fit the window
             scene.scaleMode = .aspectFill
-            
             // Present the scene
             view?.presentScene(scene)
         }

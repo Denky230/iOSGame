@@ -9,6 +9,18 @@
 import SpriteKit
 import GameplayKit
 
+// Game timer
+let GAME_TIME_SECONDS = 30
+var gameTimerLbl = SKLabelNode(fontNamed: "ArialMT")
+var gameTimer = 0 {
+    didSet {
+        let mins = gameTimer / 60
+        let secs = gameTimer % 60
+        // Make sure text is hour formated (m:ss)
+        gameTimerLbl.text = String(format: "%d:%02d", mins, secs)
+    }
+}
+
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // Scene
@@ -19,16 +31,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     // Game camera
     let CAMERA_INNER_BOUNDS_PERCENT = 10
     var cam: SKCameraNode!
-    // Game timer
-    var gameTimerLbl = SKLabelNode(fontNamed: "ArialMT")
-    var gameTimer = 30 {
-        didSet {
-            let mins = gameTimer / 60
-            let secs = gameTimer % 60
-            // Make sure text is hour formated (m:ss)
-            gameTimerLbl.text = String(format: "%d:%02d", mins, secs)
-        }
-    }
     // UI Controls
     var jumpPad = SKSpriteNode()
     var leftPad = SKSpriteNode()
@@ -68,6 +70,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.addChild(cam)
     }
     func initTimer() {
+        gameTimer = GAME_TIME_SECONDS
         gameTimerLbl.fontSize = 40
         gameTimerLbl.fontColor = .red
         gameTimerLbl.position = CGPoint(
@@ -78,8 +81,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         let wait = SKAction.wait(forDuration: 1)
         let block = SKAction.run({ [unowned self] in
-            if self.gameTimer > 0 {
-                self.gameTimer -= 1
+            if gameTimer > 0 {
+                gameTimer -= 1
             } else {
                 self.removeAction(forKey: "gameTimer")
 //                self.gameOver(victory: false)
@@ -166,8 +169,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func gameOver(victory: Bool) {
-        print( victory ? "Winwin" : "U ded" )
-        
         // Send to GameOver screen
         let gameOverScene: GameOverScene = GameOverScene(size: self.size)
         gameOverScene.scaleMode = .aspectFill
@@ -218,18 +219,21 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             gameOver(victory: true)
         }
         else if bA == "player" && bB == "floor" {
-            player.isGrounded = true
+            // If Player is falling, reset jump
+            if player.physicsBody!.velocity.dy > 0 {
+                player.isGrounded = true
+            }
         }
         else if bA == "player" && bB == "trap" {
-//            gameOver(victory: false)
-            
-            // Check if Player hit lower part of Trap
-            let diff = abs(bodyB.frame.minY - contact.contactPoint.y)
-            if diff < 0.5 {
+            // Check if Player is inside Trap
+            if bodyA.position.x < bodyB.frame.maxX && bodyA.position.x > bodyB.frame.minX {
                 
+                // Check if Player hit lower part of Trap
+                let diff = abs(bodyB.frame.minY - contact.contactPoint.y)
+                if diff < 10 && diff > 0 {
+                    gameOver(victory: false)
+                }
             }
-            
-            print(diff)
         }
     }
     

@@ -10,6 +10,9 @@ import SpriteKit
 
 class Player: SKSpriteNode {
     
+    let SPEED = 200
+    let JUMP_FORCE = 25
+    
     init(spriteNode: SKSpriteNode) {
         super.init(texture: spriteNode.texture, color: spriteNode.color, size: spriteNode.size)
         
@@ -34,11 +37,11 @@ class Player: SKSpriteNode {
     
     // Use to move on buttonPress
     func move(direction: CGFloat) {
-        self.physicsBody?.velocity = CGVector(dx: 200 * direction, dy: (self.physicsBody?.velocity.dy)!)
+        self.physicsBody?.velocity = CGVector(dx: CGFloat(SPEED) * direction, dy: (self.physicsBody?.velocity.dy)!)
     }
     // Use to move on buttonHold
     func movePro(direction: CGFloat) {
-        let moveAction = SKAction.moveBy(x: 200 * direction, y: 0, duration: 1)
+        let moveAction = SKAction.moveBy(x: CGFloat(SPEED) * direction, y: 0, duration: 1)
         let repeatForEver = SKAction.repeatForever(moveAction)
         let seq = SKAction.sequence([moveAction, repeatForEver])
         
@@ -50,7 +53,7 @@ class Player: SKSpriteNode {
     func jump() {
         if isGrounded {
             isGrounded = false
-            self.physicsBody!.applyImpulse(CGVector(dx: 0, dy: 25))
+            self.physicsBody!.applyImpulse(CGVector(dx: 0, dy: JUMP_FORCE))
         }
     }
 }
