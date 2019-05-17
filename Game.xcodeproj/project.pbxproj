@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1F09ACE3228F24110001C84E /* TrapVertical.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F09ACE2228F24110001C84E /* TrapVertical.swift */; };
 		1F0E0A6522400EAA007C98D9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F0E0A6422400EAA007C98D9 /* AppDelegate.swift */; };
 		1F0E0A6722400EAA007C98D9 /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = 1F0E0A6622400EAA007C98D9 /* GameScene.sks */; };
 		1F0E0A6922400EAA007C98D9 /* Actions.sks in Resources */ = {isa = PBXBuildFile; fileRef = 1F0E0A6822400EAA007C98D9 /* Actions.sks */; };
@@ -23,6 +24,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		1F09ACE2228F24110001C84E /* TrapVertical.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrapVertical.swift; sourceTree = "<group>"; };
 		1F0E0A6122400EAA007C98D9 /* Game.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Game.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1F0E0A6422400EAA007C98D9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		1F0E0A6622400EAA007C98D9 /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameScene.sks; sourceTree = "<group>"; };
@@ -89,6 +91,7 @@
 			children = (
 				1F684EFB22527E5E0018363F /* Player.swift */,
 				FA988AE12280ECB3005D6153 /* Trap.swift */,
+				1F09ACE2228F24110001C84E /* TrapVertical.swift */,
 			);
 			path = Entities;
 			sourceTree = "<group>";
@@ -195,6 +198,7 @@
 			files = (
 				FA988AE22280ECB3005D6153 /* Trap.swift in Sources */,
 				1F0E0A6B22400EAA007C98D9 /* GameScene.swift in Sources */,
+				1F09ACE3228F24110001C84E /* TrapVertical.swift in Sources */,
 				55B95186228EFCFB00B7185C /* GameOverScene.swift in Sources */,
 				1F0E0A6D22400EAA007C98D9 /* GameViewController.swift in Sources */,
 				FA988AE52280FA3B005D6153 /* EndViewController.swift in Sources */,

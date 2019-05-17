@@ -23,9 +23,9 @@ class Player: SKSpriteNode {
         // Set physics body
         self.physicsBody = SKPhysicsBody(rectangleOf: size)
         // Remove friction
-//        self.physicsBody!.linearDamping     = 0
-//        self.physicsBody?.restitution       = 0
-//        self.physicsBody?.friction          = 0
+        self.physicsBody!.linearDamping     = 0
+        self.physicsBody?.restitution       = 0
+        self.physicsBody?.friction          = 0
         // Set body collision
         self.physicsBody?.categoryBitMask = CollisionMasks.player.rawValue
         self.physicsBody?.collisionBitMask = CollisionMasks.floor.rawValue | CollisionMasks.trap.rawValue

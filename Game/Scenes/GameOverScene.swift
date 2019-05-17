@@ -23,26 +23,17 @@ class GameOverScene: SKScene {
     func initContent() {
         backgroundColor = .black
         
-        let scoreLabel = SKLabelNode(fontNamed: "Futura")
-        scoreLabel.fontSize = 40
-        scoreLabel.fontColor = .white
-        scoreLabel.text = "Score - \(gameTimerLbl.text!)"
-        scoreLabel.position = CGPoint(
+        // Screen title
+        let titleLabel = SKLabelNode(fontNamed: "Futura")
+        titleLabel.fontSize = 60
+        titleLabel.fontColor = .white
+        titleLabel.position = CGPoint(
             x: self.size.width / 2,
-            y: self.size.height * 0.50
+            y: self.size.height * 0.75
         )
-        addChild(scoreLabel)
+        addChild(titleLabel)
         
-        let gameOverLabel = SKLabelNode(fontNamed: "Futura")
-        gameOverLabel.fontSize = 60
-        gameOverLabel.fontColor = .white
-        gameOverLabel.text = "GAME OVER"
-        gameOverLabel.position = CGPoint(
-            x: self.size.width / 2,
-            y: self.size.height * 2.0 / 3.0
-        )
-        addChild(gameOverLabel)
-        
+        // Play again label
         let playAgainLabel = SKLabelNode(fontNamed: "Futura")
         playAgainLabel.fontSize = 22
         playAgainLabel.fontColor = .white
@@ -52,6 +43,25 @@ class GameOverScene: SKScene {
             y: self.size.height * 0.20
         )
         addChild(playAgainLabel)
+        
+        // Check victory / defeat game state
+        if win {
+            titleLabel.text = "VICTORY!"
+            
+            // Score label
+            let scoreLabel = SKLabelNode(fontNamed: "Futura")
+            scoreLabel.fontSize = 40
+            scoreLabel.fontColor = .white
+            scoreLabel.text = "Score - \(gameTimerLbl.text!)"
+            scoreLabel.position = CGPoint(
+                x: self.size.width / 2,
+                y: self.size.height * 0.50
+            )
+            addChild(scoreLabel)
+            
+        } else {
+            titleLabel.text = "GAME OVER :("
+        }
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {

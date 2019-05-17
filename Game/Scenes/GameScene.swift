@@ -9,34 +9,30 @@
 import SpriteKit
 import GameplayKit
 
-// Game timer
-let GAME_TIME_SECONDS = 30
+var win: Bool = false
 var gameTimerLbl = SKLabelNode(fontNamed: "ArialMT")
-var gameTimer = 0 {
-    didSet {
-        let mins = gameTimer / 60
-        let secs = gameTimer % 60
-        // Make sure text is hour formated (m:ss)
-        gameTimerLbl.text = String(format: "%d:%02d", mins, secs)
-    }
-}
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
-    // Scene
-    var scale: Float = 0
-    let TOTAL_TILES: Int = 20
     // Character
     var player: Player!
     // Game camera
     let CAMERA_INNER_BOUNDS_PERCENT = 10
     var cam: SKCameraNode!
+    // Game timer
+    let GAME_TIME_SECONDS = 30
+    var gameTimer = 0 {
+        didSet {
+            let mins = gameTimer / 60
+            let secs = gameTimer % 60
+            // Make sure text is hour formated (m:ss)
+            gameTimerLbl.text = String(format: "%d:%02d", mins, secs)
+        }
+    }
     // UI Controls
     var jumpPad = SKSpriteNode()
     var leftPad = SKSpriteNode()
     var rightPad = SKSpriteNode()
-    // Other stuff yet to name
-    var goal = SKSpriteNode()
     
     override func didMove(to view: SKView) {
         // Handle our own physics
@@ -50,8 +46,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         initEnvironment()
         initControls()
         initTraps()
-        
-        scale = Float((self.scene?.frame.width)! / CGFloat(TOTAL_TILES))
     }
     
     func initPlayer() {
@@ -81,11 +75,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         let wait = SKAction.wait(forDuration: 1)
         let block = SKAction.run({ [unowned self] in
-            if gameTimer > 0 {
-                gameTimer -= 1
+            if self.gameTimer > 0 {
+                self.gameTimer -= 1
             } else {
                 self.removeAction(forKey: "gameTimer")
-//                self.gameOver(victory: false)
+                self.gameOver(victory: false)
             }
         })
         let sequence = SKAction.sequence([wait, block])
@@ -93,7 +87,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     func initOtherStuff() {
         // Get node from scene
-        goal = self.childNode(withName: "goal") as! SKSpriteNode
+        let goal = self.childNode(withName: "goal") as! SKSpriteNode
         // Set physics body
         goal.physicsBody = SKPhysicsBody(rectangleOf: goal.size)
         // Make body static so it's not affected by gravity (or other phsx)
@@ -142,21 +136,34 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         cam.addChild(rightPad)
     }
     func initTraps() {
-        scene!.enumerateChildNodes(withName: "trap") {
+        // Draw vertical Traps
+        scene!.enumerateChildNodes(withName: "trap_v") {
             (node, stop) in
             
-            // For every "trap" node found in scene, instantiate a Trap
-            self.drawRectangle(x: Int(node.position.x), y: Int(node.frame.minY))
+            // For every "trap_v" node found in scene, instantiate a TrapVertical
+            let rect = self.makeTrapRect(x: Int(node.position.x), y: Int(node.frame.minY))
+            let vTrap = TrapVertical(path: rect.path!, position: rect.position)
+            self.addChild(vTrap)
             self.removeChildren(in: [node])
+        }
+        
+        // Draw horizontal Traps
+        scene!.enumerateChildNodes(withName: "trap_h") {
+            (node, stop) in
+            
+            // For every "trap" node found in scene, instantiate a TrapHorizontal
+//            let rect = self.makeTrapRect(x: Int(node.position.x), y: Int(node.frame.minY))
+//            let hTrap = TrapVertical(path: rect.path!, position: rect.position)
+//            self.addChild(hTrap)
+//            self.removeChildren(in: [node])
         }
     }
     
-    func drawRectangle(x: Int, y: Int) {
+    func makeTrapRect(x: Int, y: Int) -> SKShapeNode {
         let size = 80
         let rect = SKShapeNode(rectOf: CGSize(width: size, height: size))
         rect.position = CGPoint(x: x, y: y + size / 2 + 100)
-        let box = Trap(path: rect.path!, position: rect.position)
-        self.addChild(box)
+        return rect
     }
     func drawTriangle() {
         let path = UIBezierPath()
@@ -169,6 +176,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func gameOver(victory: Bool) {
+        // Set victory / defeat state
+        win = victory
+        
         // Send to GameOver screen
         let gameOverScene: GameOverScene = GameOverScene(size: self.size)
         gameOverScene.scaleMode = .aspectFill
@@ -186,8 +196,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 // Check if location matches any button
                 switch (nodes[0]) {
                     case jumpPad: player.jump(); break
-                    case leftPad: player.movePro(direction: -1); break
-                    case rightPad: player.movePro(direction: 1); break
+                    case leftPad: player.move(direction: -1); break
+                    case rightPad: player.move(direction: 1); break
                     default: break
                 }
             }
@@ -234,6 +244,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     gameOver(victory: false)
                 }
             }
+        }
+        else if bA == "player" && bB == "death" {
+            gameOver(victory: false)
         }
     }
     

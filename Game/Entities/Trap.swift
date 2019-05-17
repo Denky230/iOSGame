@@ -28,7 +28,16 @@ class Trap: SKShapeNode {
         self.physicsBody?.collisionBitMask = CollisionMasks.player.rawValue | CollisionMasks.floor.rawValue
         self.physicsBody?.isDynamic = false
         
-        // Set up animations with SKActions
+        // Run move Action
+        run(getAnimation(), withKey: "move")
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    // Set up animations with SKActions
+    func getAnimation() -> SKAction {
         let rand = Float.random(in: 0 ... 1)
         let initialDelay = SKAction.wait(forDuration: TimeInterval(rand))
         let moveDown = SKAction.move(by: CGVector(dx: 0, dy: -100), duration: 0.05)
@@ -36,13 +45,6 @@ class Trap: SKShapeNode {
         let delay = SKAction.wait(forDuration: 0.75)
         let sequence = SKAction.sequence([moveDown, delay, moveUp, delay])
         let loop = SKAction.repeatForever(sequence)
-        let animation = SKAction.sequence([initialDelay, loop])
-        
-        // Run move Action
-        run(animation, withKey: "move")
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        return SKAction.sequence([initialDelay, loop])
     }
 }
