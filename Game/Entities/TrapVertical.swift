@@ -17,7 +17,7 @@ class TrapVertical: Trap {
         self.name = "trap_v"
         
         // Adjust Y since position.y is at floor level
-        self.position.y += self.frame.height / 2 + CGFloat(RANGE)
+        self.position.y += self.frame.height / 2 + CGFloat(range)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -27,8 +27,8 @@ class TrapVertical: Trap {
     override func getAnimation() -> SKAction {
         let rand = Float.random(in: 0 ... 1)
         let initialDelay = SKAction.wait(forDuration: TimeInterval(rand))
-        let moveDown = SKAction.move(by: CGVector(dx: 0, dy: -RANGE), duration: 0.05)
-        let moveUp = SKAction.move(by: CGVector(dx: 0, dy: RANGE), duration: 1)
+        let moveDown = SKAction.move(by: CGVector(dx: 0, dy: -range), duration: 0.05)
+        let moveUp = SKAction.move(by: CGVector(dx: 0, dy: range), duration: 1)
         let delay = SKAction.wait(forDuration: 0.75)
         let sequence = SKAction.sequence([moveDown, delay, moveUp, delay])
         let loop = SKAction.repeatForever(sequence)

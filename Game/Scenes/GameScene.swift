@@ -20,7 +20,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     let CAMERA_INNER_BOUNDS_SCREEN_PERCENT = 20
     var cam: SKCameraNode!
     // Game timer
-    let GAME_TIME_SECONDS = 30
+    let GAME_TIME_SECONDS = 60
     var gameTimer = 0 {
         didSet {
             let mins = gameTimer / 60
@@ -148,38 +148,38 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             (node, stop) in
             
             // For every "trap_v" node found in scene, instantiate a TrapVertical
-            let rect = self.makeTrapRect(x: Int(node.position.x), y: Int(node.frame.minY))
+            let rect = self.makeTrapRect(x: Int(node.position.x), y: Int(node.frame.minY), size: 80)
             let vTrap = TrapVertical(path: rect.path!, position: rect.position)
             self.addChild(vTrap)
             self.removeChildren(in: [node])
         }
         
-        // Draw horizontal Traps
-        scene!.enumerateChildNodes(withName: "trap_h") {
+        // Draw horizontal left Traps
+        scene!.enumerateChildNodes(withName: "trap_h_l") {
             (node, stop) in
             
             // For every "trap" node found in scene, instantiate a TrapHorizontal
-            let rect = self.makeTrapRect(x: Int(node.position.x), y: Int(node.frame.midY))
+            let rect = self.makeTrapRect(x: Int(node.position.x), y: Int(node.frame.midY), size: 40)
+            let hTrap = TrapHorizontal(path: rect.path!, position: rect.position, direction: 1)
+            self.addChild(hTrap)
+            self.removeChildren(in: [node])
+        }
+        // Draw horizontal right Traps
+        scene!.enumerateChildNodes(withName: "trap_h_r") {
+            (node, stop) in
+            
+            // For every "trap" node found in scene, instantiate a TrapHorizontal
+            let rect = self.makeTrapRect(x: Int(node.position.x), y: Int(node.frame.midY), size: 40)
             let hTrap = TrapHorizontal(path: rect.path!, position: rect.position, direction: -1)
             self.addChild(hTrap)
             self.removeChildren(in: [node])
         }
     }
     
-    func makeTrapRect(x: Int, y: Int) -> SKShapeNode {
-        let size = 80
+    func makeTrapRect(x: Int, y: Int, size: Int) -> SKShapeNode {
         let rect = SKShapeNode(rectOf: CGSize(width: size, height: size))
         rect.position = CGPoint(x: x, y: y)
         return rect
-    }
-    func drawTriangle() {
-        let path = UIBezierPath()
-        path.move(to: CGPoint(x: 0.0, y: 50.0))
-        path.addLine(to: CGPoint(x: 50.0, y: -36.6))
-        path.addLine(to: CGPoint(x: -50.0, y: -36.6))
-        path.addLine(to: CGPoint(x: 0.0, y: 50.0))
-        let tri = SKShapeNode(path: path.cgPath)
-        self.addChild(tri)
     }
     
     func gameOver(victory: Bool) {
@@ -232,34 +232,44 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         guard let bA = CollisionMasks.init(rawValue: bodyA.physicsBody!.categoryBitMask) else { return }
         guard let bB = CollisionMasks.init(rawValue: bodyB.physicsBody!.categoryBitMask) else { return }
         
-        // Check for collisions
+        /* CHECK FOR COLLISIONS */
         if bA == .player && bB == .goal {
             gameOver(victory: true)
         }
+            
         else if bA == .player && bB == .trap {
-            // Check if Player is inside Trap
-            if player.frame.minX < bodyB.frame.maxX && player.frame.minX > bodyB.frame.minX || player.frame.maxX > bodyB.frame.minX && player.frame.maxX < bodyB.frame.maxX {
-                
-                // Check if Player hit lower part of Trap
-                let diff = abs(bodyB.frame.minY - contact.contactPoint.y)
-                if diff < 10 && diff > 0 {
-                    gameOver(victory: false)
-                }
+            switch (bodyB.name) {
+                case "trap_v":
+                    // Check if Player is inside Trap
+                    if bodyA.position.x < bodyB.frame.maxX && bodyA.position.x > bodyB.frame.minX {
+                        
+                        // Check if Player hit lower part of Trap
+                        let diff = abs(bodyB.frame.minY - contact.contactPoint.y)
+                        if diff < 10 && diff > 0 {
+                            gameOver(victory: false)
+                        }
+                    }
+                    break
+                case "trap_h":
+                    // Check if Player is inside Trap
+                    if bodyA.position.y < bodyB.frame.maxY && bodyA.position.y > bodyB.frame.minY {
+                        gameOver(victory: false)
+                    }
+                    break
+                default: break
             }
         }
+            
         else if bA == .player && bB == .floor {
             // If Player is falling, reset jump
             if player.physicsBody!.velocity.dy > 0 {
                 player.isGrounded = true
             }
         }
+            
         else if bA == .player && bB == .death {
             gameOver(victory: false)
         }
-        
-        print(bA)
-        print(" ")
-        print(bB)
     }
     
     // Handle physics here

@@ -19,7 +19,10 @@ class TrapHorizontal: Trap {
         super.init(path: path, position: position)
         
         // Set name so we can check for collisions easier
-        self.name = "trap_v"
+        self.name = "trap_h"
+        
+        // Adjust X to make sure Trap doesn't clip a wall
+        self.position.x += (self.frame.width / 2) * CGFloat(direction)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -27,13 +30,11 @@ class TrapHorizontal: Trap {
     }
     
     override func getAnimation() -> SKAction {
-        let rand = Float.random(in: 0 ... 1)
-        let initialDelay = SKAction.wait(forDuration: TimeInterval(rand))
-        let moveFirst = SKAction.move(by: CGVector(dx: RANGE * direction, dy: 0), duration: 0.05)
-        let moveSecond = SKAction.move(by: CGVector(dx: -RANGE * direction, dy: 0), duration: 0.05)
+        let moveFirst = SKAction.move(by: CGVector(dx: 140 * direction, dy: 0), duration: 0.05)
+        let moveSecond = SKAction.move(by: CGVector(dx: -140 * direction, dy: 0), duration: 0.05)
         let delay = SKAction.wait(forDuration: 0.75)
         let sequence = SKAction.sequence([moveFirst, delay, moveSecond, delay])
         let loop = SKAction.repeatForever(sequence)
-        return SKAction.sequence([initialDelay, loop])
+        return SKAction.sequence([loop])
     }
 }

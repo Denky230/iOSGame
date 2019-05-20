@@ -10,13 +10,10 @@ import SpriteKit
 
 class Trap: SKShapeNode {
     
-    let RANGE = 100
+    var range = 100
     
     init(path: CGPath, position: CGPoint) {
         super.init()
-        
-        // Set name so we can check for collisions easier
-        self.name = "trap"
         
         // Define polygon
         self.path = path
@@ -26,7 +23,7 @@ class Trap: SKShapeNode {
         
         // Add physics body so Player can collide with it
         self.physicsBody = SKPhysicsBody(polygonFrom: path)
-        self.physicsBody?.categoryBitMask = CollisionMasks.trap.rawValue | CollisionMasks.floor.rawValue
+        self.physicsBody?.categoryBitMask = CollisionMasks.trap.rawValue
         self.physicsBody?.collisionBitMask = CollisionMasks.player.rawValue | CollisionMasks.floor.rawValue
         self.physicsBody?.isDynamic = false
         
@@ -41,5 +38,9 @@ class Trap: SKShapeNode {
     // Override to set up animations with SKActions
     func getAnimation() -> SKAction {
         return SKAction()
+    }
+    // Override to set a new range
+    func setRange(_ range: Int) {
+        self.range = range
     }
 }
