@@ -35,11 +35,11 @@ class Player: SKSpriteNode {
         fatalError("init(coder:) has not been implemented")
     }
     
-    // Use to move on buttonPress
+    // Use to move on button PRESS
     func move(direction: CGFloat) {
         self.physicsBody?.velocity = CGVector(dx: CGFloat(SPEED) * direction, dy: (self.physicsBody?.velocity.dy)!)
     }
-    // Use to move on buttonHold
+    // Use to move on button HOLD
     func movePro(direction: CGFloat) {
         let moveAction = SKAction.moveBy(x: CGFloat(SPEED) * direction, y: 0, duration: 1)
         let repeatForEver = SKAction.repeatForever(moveAction)

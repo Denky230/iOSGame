@@ -9,7 +9,7 @@
 import SpriteKit
 import GameplayKit
 
-var win: Bool = false
+var win = false
 var gameTimerLbl = SKLabelNode(fontNamed: "ArialMT")
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
@@ -17,7 +17,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     // Character
     var player: Player!
     // Game camera
-    let CAMERA_INNER_BOUNDS_PERCENT = 10
+    let CAMERA_INNER_BOUNDS_SCREEN_PERCENT = 20
     var cam: SKCameraNode!
     // Game timer
     let GAME_TIME_SECONDS = 30
@@ -90,11 +90,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let goal = self.childNode(withName: "goal") as! SKSpriteNode
         // Set physics body
         goal.physicsBody = SKPhysicsBody(rectangleOf: goal.size)
-        // Make body static so it's not affected by gravity (or other phsx)
-        goal.physicsBody!.isDynamic = false
-        // Set body collision
         goal.physicsBody?.categoryBitMask = CollisionMasks.goal.rawValue
         goal.physicsBody?.collisionBitMask = 0
+        // Make body static so it's not affected by gravity (or other phsx)
+        goal.physicsBody!.isDynamic = false
+        
+        // Same for death collider
+        let death = self.childNode(withName: "death") as! SKSpriteNode
+        death.physicsBody = SKPhysicsBody(rectangleOf: death.size)
+        death.physicsBody?.categoryBitMask = CollisionMasks.death.rawValue
+        death.physicsBody?.collisionBitMask = 0
+        death.physicsBody!.isDynamic = false
     }
     func initEnvironment() {
         scene!.enumerateChildNodes(withName: "floor") {
@@ -104,10 +110,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             // Set physics body
             let spriteNode: SKSpriteNode = node as! SKSpriteNode            
             node.physicsBody = SKPhysicsBody(rectangleOf: spriteNode.size)
+            node.physicsBody?.categoryBitMask = CollisionMasks.floor.rawValue
             // Make body static so it's not affected by gravity (or other phsx)
             node.physicsBody!.isDynamic = false
-            // Set body collision
-            node.physicsBody?.categoryBitMask = CollisionMasks.floor.rawValue
         }
     }
     func initControls() {
@@ -115,24 +120,26 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         jumpPad.position = CGPoint(x: 280, y: -40)
         // Set jump pad physics body
         jumpPad.physicsBody = SKPhysicsBody(rectangleOf: jumpPad.size)
+        jumpPad.physicsBody?.categoryBitMask = CollisionMasks.UI.rawValue
         // Make jump pad static so it's not affected by gravity (or other phsx)
         jumpPad.physicsBody!.isDynamic = false
-        jumpPad.physicsBody?.categoryBitMask = CollisionMasks.UI.rawValue
         // Add jump pad to camera so it becomes part of the UI
         cam.addChild(jumpPad)
+        
         // Left pad
         leftPad = SKSpriteNode(color: .green, size: CGSize(width: 50, height: 50))
         leftPad.position = CGPoint(x: -295  , y: -55)
         leftPad.physicsBody = SKPhysicsBody(rectangleOf: leftPad.size)
-        leftPad.physicsBody!.isDynamic = false
         leftPad.physicsBody?.categoryBitMask = CollisionMasks.UI.rawValue
+        leftPad.physicsBody!.isDynamic = false
         cam.addChild(leftPad)
+        
         // Right pad
         rightPad = SKSpriteNode(color: .green, size: CGSize(width: 50, height: 50))
         rightPad.position = CGPoint(x: -215, y: -55)
         rightPad.physicsBody = SKPhysicsBody(rectangleOf: rightPad.size)
-        rightPad.physicsBody!.isDynamic = false
         rightPad.physicsBody?.categoryBitMask = CollisionMasks.UI.rawValue
+        rightPad.physicsBody!.isDynamic = false
         cam.addChild(rightPad)
     }
     func initTraps() {
@@ -152,17 +159,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             (node, stop) in
             
             // For every "trap" node found in scene, instantiate a TrapHorizontal
-//            let rect = self.makeTrapRect(x: Int(node.position.x), y: Int(node.frame.minY))
-//            let hTrap = TrapVertical(path: rect.path!, position: rect.position)
-//            self.addChild(hTrap)
-//            self.removeChildren(in: [node])
+            let rect = self.makeTrapRect(x: Int(node.position.x), y: Int(node.frame.midY))
+            let hTrap = TrapHorizontal(path: rect.path!, position: rect.position, direction: -1)
+            self.addChild(hTrap)
+            self.removeChildren(in: [node])
         }
     }
     
     func makeTrapRect(x: Int, y: Int) -> SKShapeNode {
         let size = 80
         let rect = SKShapeNode(rectOf: CGSize(width: size, height: size))
-        rect.position = CGPoint(x: x, y: y + size / 2 + 100)
+        rect.position = CGPoint(x: x, y: y)
         return rect
     }
     func drawTriangle() {
@@ -221,22 +228,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             bodyB = contact.bodyA.node!
         }
         
-        let bA = bodyA.name!
-        let bB = bodyB.name!
+        // QoL variables
+        guard let bA = CollisionMasks.init(rawValue: bodyA.physicsBody!.categoryBitMask) else { return }
+        guard let bB = CollisionMasks.init(rawValue: bodyB.physicsBody!.categoryBitMask) else { return }
         
         // Check for collisions
-        if bA == "player" && bB == "goal" {
+        if bA == .player && bB == .goal {
             gameOver(victory: true)
         }
-        else if bA == "player" && bB == "floor" {
-            // If Player is falling, reset jump
-            if player.physicsBody!.velocity.dy > 0 {
-                player.isGrounded = true
-            }
-        }
-        else if bA == "player" && bB == "trap" {
+        else if bA == .player && bB == .trap {
             // Check if Player is inside Trap
-            if bodyA.position.x < bodyB.frame.maxX && bodyA.position.x > bodyB.frame.minX {
+            if player.frame.minX < bodyB.frame.maxX && player.frame.minX > bodyB.frame.minX || player.frame.maxX > bodyB.frame.minX && player.frame.maxX < bodyB.frame.maxX {
                 
                 // Check if Player hit lower part of Trap
                 let diff = abs(bodyB.frame.minY - contact.contactPoint.y)
@@ -245,9 +247,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 }
             }
         }
-        else if bA == "player" && bB == "death" {
+        else if bA == .player && bB == .floor {
+            // If Player is falling, reset jump
+            if player.physicsBody!.velocity.dy > 0 {
+                player.isGrounded = true
+            }
+        }
+        else if bA == .player && bB == .death {
             gameOver(victory: false)
         }
+        
+        print(bA)
+        print(" ")
+        print(bB)
     }
     
     // Handle physics here
@@ -255,18 +267,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // Called before each frame is rendered
         
         let sceneWidth = (self.scene?.frame.width)!
-        let camInnerBoundsW = sceneWidth / CGFloat(100 / CAMERA_INNER_BOUNDS_PERCENT)
+        let camInnerBoundsW = sceneWidth / CGFloat(100 / CAMERA_INNER_BOUNDS_SCREEN_PERCENT)
+        let camInnerBoundsRadius = camInnerBoundsW / 2
         let playerToCameraX = player.position.x - cam.position.x
         
         // Check if Player is out of camera inner bounds
-        if abs(playerToCameraX) > camInnerBoundsW {
-            // Update camera position
+        if abs(playerToCameraX) > camInnerBoundsRadius {
+            // Update camera position on X
             let camInnerBoundCloserToPlayer = cam.position.x +
-                (playerToCameraX > 0 ? camInnerBoundsW : -camInnerBoundsW)
+                (playerToCameraX > 0 ? camInnerBoundsRadius : -camInnerBoundsRadius)
             cam.position.x += player.position.x - camInnerBoundCloserToPlayer
         }
         
         // Camera follows Player on Y
-        cam.position.y = player.position.y + 100
+        let cameraOffsetY: CGFloat = 100
+        cam.position.y = player.position.y + cameraOffsetY
     }
 }

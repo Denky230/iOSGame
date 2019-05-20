@@ -19,6 +19,7 @@
 		1F46F3B1224AB02A0063F1E2 /* CollisionMasks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F46F3B0224AB02A0063F1E2 /* CollisionMasks.swift */; };
 		1F684EFC22527E5E0018363F /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F684EFB22527E5E0018363F /* Player.swift */; };
 		55B95186228EFCFB00B7185C /* GameOverScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55B95185228EFCFB00B7185C /* GameOverScene.swift */; };
+		FA6E496F228FA6E100EBA9EB /* TrapHorizontal.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA6E496E228FA6E100EBA9EB /* TrapHorizontal.swift */; };
 		FA988AE22280ECB3005D6153 /* Trap.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA988AE12280ECB3005D6153 /* Trap.swift */; };
 		FA988AE52280FA3B005D6153 /* EndViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA988AE42280FA3B005D6153 /* EndViewController.swift */; };
 /* End PBXBuildFile section */
@@ -38,6 +39,7 @@
 		1F46F3B0224AB02A0063F1E2 /* CollisionMasks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollisionMasks.swift; sourceTree = "<group>"; };
 		1F684EFB22527E5E0018363F /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
 		55B95185228EFCFB00B7185C /* GameOverScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameOverScene.swift; sourceTree = "<group>"; };
+		FA6E496E228FA6E100EBA9EB /* TrapHorizontal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrapHorizontal.swift; sourceTree = "<group>"; };
 		FA988AE12280ECB3005D6153 /* Trap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Trap.swift; sourceTree = "<group>"; };
 		FA988AE42280FA3B005D6153 /* EndViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -92,6 +94,7 @@
 				1F684EFB22527E5E0018363F /* Player.swift */,
 				FA988AE12280ECB3005D6153 /* Trap.swift */,
 				1F09ACE2228F24110001C84E /* TrapVertical.swift */,
+				FA6E496E228FA6E100EBA9EB /* TrapHorizontal.swift */,
 			);
 			path = Entities;
 			sourceTree = "<group>";
@@ -198,6 +201,7 @@
 			files = (
 				FA988AE22280ECB3005D6153 /* Trap.swift in Sources */,
 				1F0E0A6B22400EAA007C98D9 /* GameScene.swift in Sources */,
+				FA6E496F228FA6E100EBA9EB /* TrapHorizontal.swift in Sources */,
 				1F09ACE3228F24110001C84E /* TrapVertical.swift in Sources */,
 				55B95186228EFCFB00B7185C /* GameOverScene.swift in Sources */,
 				1F0E0A6D22400EAA007C98D9 /* GameViewController.swift in Sources */,

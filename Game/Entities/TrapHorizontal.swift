@@ -1,23 +1,25 @@
 //
-//  TrapVertical.swift
+//  TrapHorizontal.swift
 //  Game
 //
-//  Created by Oscar Rossello on 17/05/2019.
+//  Created by dmorenoar on 18/05/2019.
 //  Copyright © 2019 Oscar Rossello. All rights reserved.
 //
 
 import SpriteKit
 
-class TrapVertical: Trap {
+class TrapHorizontal: Trap {
     
-    override init(path: CGPath, position: CGPoint) {
+    // 1 = RIGHT / -1 = LEFT
+    let direction: Int
+    
+    init(path: CGPath, position: CGPoint, direction: Int) {
+        // Make sure direction is always 1 / -1
+        self.direction = direction / abs(direction)
         super.init(path: path, position: position)
         
         // Set name so we can check for collisions easier
         self.name = "trap_v"
-        
-        // Adjust Y since position.y is at floor level
-        self.position.y += self.frame.height / 2 + CGFloat(RANGE)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -27,10 +29,10 @@ class TrapVertical: Trap {
     override func getAnimation() -> SKAction {
         let rand = Float.random(in: 0 ... 1)
         let initialDelay = SKAction.wait(forDuration: TimeInterval(rand))
-        let moveDown = SKAction.move(by: CGVector(dx: 0, dy: -RANGE), duration: 0.05)
-        let moveUp = SKAction.move(by: CGVector(dx: 0, dy: RANGE), duration: 1)
+        let moveFirst = SKAction.move(by: CGVector(dx: RANGE * direction, dy: 0), duration: 0.05)
+        let moveSecond = SKAction.move(by: CGVector(dx: -RANGE * direction, dy: 0), duration: 0.05)
         let delay = SKAction.wait(forDuration: 0.75)
-        let sequence = SKAction.sequence([moveDown, delay, moveUp, delay])
+        let sequence = SKAction.sequence([moveFirst, delay, moveSecond, delay])
         let loop = SKAction.repeatForever(sequence)
         return SKAction.sequence([initialDelay, loop])
     }

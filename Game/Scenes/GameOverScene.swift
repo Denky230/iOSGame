@@ -27,11 +27,7 @@ class GameOverScene: SKScene {
         let titleLabel = SKLabelNode(fontNamed: "Futura")
         titleLabel.fontSize = 60
         titleLabel.fontColor = .white
-        titleLabel.position = CGPoint(
-            x: self.size.width / 2,
-            y: self.size.height * 0.75
-        )
-        addChild(titleLabel)
+        titleLabel.position.x = self.size.width / 2
         
         // Play again label
         let playAgainLabel = SKLabelNode(fontNamed: "Futura")
@@ -40,13 +36,14 @@ class GameOverScene: SKScene {
         playAgainLabel.text = "Tap to try again"
         playAgainLabel.position = CGPoint(
             x: self.size.width / 2,
-            y: self.size.height * 0.20
+            y: self.size.height * 0.25
         )
         addChild(playAgainLabel)
         
         // Check victory / defeat game state
         if win {
             titleLabel.text = "VICTORY!"
+            titleLabel.position.y = self.size.height * 0.65
             
             // Score label
             let scoreLabel = SKLabelNode(fontNamed: "Futura")
@@ -55,13 +52,16 @@ class GameOverScene: SKScene {
             scoreLabel.text = "Score - \(gameTimerLbl.text!)"
             scoreLabel.position = CGPoint(
                 x: self.size.width / 2,
-                y: self.size.height * 0.50
+                y: self.size.height * 0.4
             )
             addChild(scoreLabel)
             
         } else {
             titleLabel.text = "GAME OVER :("
+            titleLabel.position.y = self.size.height * 0.5
         }
+        
+        addChild(titleLabel)
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
