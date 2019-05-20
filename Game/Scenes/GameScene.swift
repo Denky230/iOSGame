@@ -30,7 +30,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     // UI Controls
-    var jumpPad = SKSpriteNode()
+    var jumpPad = SKShapeNode()
     var leftPad = SKSpriteNode()
     var rightPad = SKSpriteNode()
     
@@ -108,7 +108,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
             // For every "floor" node found in scene...
             // Set physics body
-            let spriteNode: SKSpriteNode = node as! SKSpriteNode            
+            let spriteNode: SKSpriteNode = node as! SKSpriteNode
             node.physicsBody = SKPhysicsBody(rectangleOf: spriteNode.size)
             node.physicsBody?.categoryBitMask = CollisionMasks.floor.rawValue
             // Make body static so it's not affected by gravity (or other phsx)
@@ -116,26 +116,31 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     func initControls() {
-        jumpPad = SKSpriteNode(color: .yellow, size: CGSize(width: 80, height: 80))
+        // Jump button
+        let radius: CGFloat = 40
+        jumpPad = SKShapeNode(circleOfRadius: radius)
+        jumpPad.fillColor = .orange
         jumpPad.position = CGPoint(x: 280, y: -40)
         // Set jump pad physics body
-        jumpPad.physicsBody = SKPhysicsBody(rectangleOf: jumpPad.size)
+        jumpPad.physicsBody = SKPhysicsBody(circleOfRadius: radius)
         jumpPad.physicsBody?.categoryBitMask = CollisionMasks.UI.rawValue
         // Make jump pad static so it's not affected by gravity (or other phsx)
         jumpPad.physicsBody!.isDynamic = false
-        // Add jump pad to camera so it becomes part of the UI
         cam.addChild(jumpPad)
         
+        // Movement buttons
+        let size = 70
         // Left pad
-        leftPad = SKSpriteNode(color: .green, size: CGSize(width: 50, height: 50))
-        leftPad.position = CGPoint(x: -295  , y: -55)
+        let leftArrow = UIImage(named: "leftArrow")!
+        leftPad = SKSpriteNode(texture: SKTexture(image: leftArrow), size: CGSize(width: size, height: size))
+        leftPad.position = CGPoint(x: -295, y: -55)
         leftPad.physicsBody = SKPhysicsBody(rectangleOf: leftPad.size)
         leftPad.physicsBody?.categoryBitMask = CollisionMasks.UI.rawValue
         leftPad.physicsBody!.isDynamic = false
         cam.addChild(leftPad)
-        
         // Right pad
-        rightPad = SKSpriteNode(color: .green, size: CGSize(width: 50, height: 50))
+        let rightArrow = UIImage(named: "rightArrow")!
+        rightPad = SKSpriteNode(texture: SKTexture(image: rightArrow), size: CGSize(width: size, height: size))
         rightPad.position = CGPoint(x: -215, y: -55)
         rightPad.physicsBody = SKPhysicsBody(rectangleOf: rightPad.size)
         rightPad.physicsBody?.categoryBitMask = CollisionMasks.UI.rawValue
@@ -203,8 +208,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 // Check if location matches any button
                 switch (nodes[0]) {
                     case jumpPad: player.jump(); break
-                    case leftPad: player.move(direction: -1); break
-                    case rightPad: player.move(direction: 1); break
+                    case leftPad: player.movePro(direction: -1); break
+                    case rightPad: player.movePro(direction: 1); break
                     default: break
                 }
             }
